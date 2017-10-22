@@ -6,11 +6,11 @@ const Schema = mongoose.Schema;
 const IdeaSchema = new Schema({
     title: {
         type: String,
-        required: true,
+        required: true
     },
     details: {
         type: String,
-        required: true,
+        required: true
     },
     date: {
         type: Date,

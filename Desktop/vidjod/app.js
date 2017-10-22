@@ -10,7 +10,7 @@ const app = express();
 mongoose.Promise = global.Promise;
 
 //connect to mongoose
-mongoose.connect('mongodb://localhost/webjob-dev', {
+mongoose.connect('mongodb://localhost:27017/webjob-dev', {
         useMongoClient: true
     })
     .then(() => console.log('MongoDB Connected'))
@@ -44,6 +44,17 @@ app.get('/about', (req, res) => {
     res.render('about');
 });
 
+//idea index page 
+app.get('/ideas', (req, res) => {
+    Idea.find({})
+        .sort({ date: 'desc' })
+        .then(ideas => {
+            res.render('ideas/index', {
+                ideas: ideas
+            });
+        });
+});
+
 
 //add idea form
 app.get('/ideas/add', (req, res) => {
@@ -71,13 +82,21 @@ app.post('/ideas', (req, res) => {
         });
 
     } else {
-        res.send('Passed');
+        const newUser = {
+            title: req.body.title,
+            details: req.body.details
+        }
+        new Idea(newUser)
+            .save()
+            .then(idea => {
+                res.redirect('/ideas');
+            })
     }
 
 });
 
 
-const port = 5000;
+const port = 3000;
 
 app.listen(port, () => {
     console.log(`Server Started on port ${port}`);
