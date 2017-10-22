@@ -1,8 +1,11 @@
 const express = require('express');
 const exphbs = require('express-handlebars');
+const methodOverride = require('method-override')
 const hbs = require('hbs');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const flash = require('connect-flash');
+const session = require('express-session')
 
 const app = express();
 
@@ -21,15 +24,33 @@ require('./models/Idea');
 const Idea = mongoose.model('ideas');
 
 
-
-
 //handlebars Middlewares 
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
 
 //Body parser Middleware
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+//Method override Middleware
+app.use(methodOverride('_method'));
+
+//Express Session Middleware
+app.use(session({
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true
+}));
+
+app.use(flash());
+
+//Global variables
+app.use(function(req, res, next) {
+    res.locals.success_msg = req.flash('success_msg');
+    res.locals.error_msg = req.flash('error_msg');
+    res.locals.error = req.flash('error');
+    next();
+});
 
 
 //index Route
@@ -71,7 +92,6 @@ app.get('/ideas/edit/:id', (req, res) => {
                 idea: idea
             });
         });
-
 });
 
 app.get('/about', (req, res) => {
@@ -106,10 +126,38 @@ app.post('/ideas', (req, res) => {
         new Idea(newUser)
             .save()
             .then(idea => {
+                req.flash('success_msg', 'New Note Added');
                 res.redirect('/ideas');
             })
     }
 
+});
+
+//Edit form process and updates
+app.put('/ideas/:id', (req, res) => {
+    Idea.findOne({
+            _id: req.params.id
+        })
+        .then(idea => {
+            // new values 
+            idea.title = req.body.title;
+            idea.details = req.body.details;
+
+            idea.save()
+                .then(idea => {
+                    res.redirect('/ideas');
+                })
+
+        });
+});
+
+//delete idea 
+app.delete('/ideas/:id', (req, res) => {
+    Idea.remove({ _id: req.params.id })
+        .then(() => {
+            req.flash('success_msg', 'Idea removed');
+            res.redirect('/ideas');
+        });
 });
 
 
