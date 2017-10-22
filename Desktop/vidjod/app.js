@@ -55,10 +55,27 @@ app.get('/ideas', (req, res) => {
         });
 });
 
-
 //add idea form
 app.get('/ideas/add', (req, res) => {
     res.render('ideas/add');
+});
+
+
+//edit idea form
+app.get('/ideas/edit/:id', (req, res) => {
+    Idea.findOne({
+            _id: req.params.id
+        })
+        .then(idea => {
+            res.render('ideas/edit', {
+                idea: idea
+            });
+        });
+
+});
+
+app.get('/about', (req, res) => {
+    res.render('about');
 });
 
 //process form
