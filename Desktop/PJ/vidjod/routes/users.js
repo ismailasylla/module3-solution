@@ -1,6 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+//const passport = require('passport');
+
+
 const router = express.Router();
+//load user model 
+require('../models/User');
+const User = mongoose.model('users');
+
+require('../models/Idea');
+const Idea = mongoose.model('ideas');
 
 
 
@@ -36,7 +46,39 @@ router.post('/register', (req, res) => {
 
         });
     } else {
-        res.send('passed');
+        User.findOne({ email: req.body.email })
+            .then(user => {
+                if (user) {
+                    req.flash('error_msg', 'This email is already in use ');
+                    res.redirect('/users/register')
+
+                } else {
+                    const newUser = new User({
+                        name: req.body.name,
+                        email: req.body.email,
+                        password: req.body.password,
+                        password2: req.body.password2
+                    })
+                    bcrypt.genSalt(10, (err, salt) => {
+                        bcrypt.hash(newUser.password, salt, (err, hash) => {
+                            if (err) throw err;
+                            newUser.password = hash;
+                            newUser.save()
+                                .then(user => {
+                                    req.flash('success_msg', 'You are Now Registered You can Now logIn');
+                                    res.redirect('/users/login');
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                    return;
+                                });
+                        });
+                    });
+
+                }
+            });
+
+
     }
 });
 
