@@ -1,0 +1,21 @@
+{
+  "name": "vidjod",
+  "version": "1.0.0",
+  "description": "App to Create Video ideas",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "isma",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "connect-flash": "^0.1.1",
+    "express": "^4.16.2",
+    "express-handlebars": "^3.0.0",
+    "express-session": "^1.15.6",
+    "hbs": "^4.0.1",
+    "method-override": "^2.3.10",
+    "mongoose": "^4.12.3"
+  }
+}
