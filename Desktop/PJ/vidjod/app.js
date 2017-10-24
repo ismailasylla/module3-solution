@@ -5,15 +5,18 @@ const methodOverride = require('method-override')
 const hbs = require('hbs');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const passport = require('passport');
 const flash = require('connect-flash');
 const session = require('express-session')
 
 const app = express();
 
 // loads routes
-
 const ideas = require('./routes/ideas');
 const users = require('./routes/users');
+
+//passport config 
+require('./config/passport')(passport);
 
 
 //Map global promise -get rid of warning
